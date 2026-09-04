@@ -1,0 +1,1877 @@
+<!doctype html>
+<html lang="ar" dir="rtl" class="h-full dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NotesApp | مساحة الملاحظات والتحليل الذكي</title>
+    <meta name="description" content="تطبيق ومساحة عمل NotesApp للملاحظات والتحليل الذكي مع n8n Webhook وسحب وإفلات الملفات ودعم الوضع الليلي والنهاري." />
+    <meta property="og:title" content="NotesApp | مساحة الملاحظات والتحليل الذكي" />
+    <meta property="og:description" content="تطبيق ومساحة عمل NotesApp للملاحظات والتحليل الذكي مع n8n Webhook وسحب وإفلات الملفات ودعم الوضع الليلي والنهاري." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- App Favicon & Icon matching #b25f40 palette -->
+    <link rel="icon" type="image/svg+xml" href="/public/icon.svg" />
+    <link rel="apple-touch-icon" href="/public/icon.svg" />
+
+    <!-- Google Fonts: Editorial Serif & Display (Amiri, El Messiri, Playfair Display) + Bilingual Sans (Alexandria, Cairo, Plus Jakarta Sans) from Arabic Typography Reference -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;500;600;700;800&family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Cairo:wght@400;500;600;700&family=El+Messiri:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Alexandria', 'Cairo', 'system-ui', 'sans-serif'],
+              serif: ['"Playfair Display"', 'Amiri', '"El Messiri"', 'serif'],
+              display: ['"El Messiri"', 'Amiri', '"Playfair Display"', 'serif'],
+              editorial: ['"Playfair Display"', 'Amiri', 'serif'],
+              mono: ['Consolas', 'Monaco', 'Courier New', 'monospace'],
+            },
+            colors: {
+              // Specification Palette
+              primary: {
+                DEFAULT: '#b25f40',
+                hover: '#9a4e33',
+                darkHover: '#c47051',
+                light: 'rgba(178, 95, 64, 0.12)',
+                darkLight: 'rgba(178, 95, 64, 0.22)',
+              },
+              brand: {
+                primary: '#b25f40',
+                bg: '#fbf4e9',
+                text: '#3b322a',
+                neutral1: '#7a7e72',
+                neutral2: '#3f4734',
+                neutral3: '#738382',
+                neutral4: '#e5e891',
+                neutral5: '#7f7b61',
+              },
+              app: {
+                bg: '#fbf4e9',
+                text: '#3b322a',
+                darkBg: '#1a1613',
+                darkCard: '#241e1a',
+                darkCardHover: '#2d2621',
+                darkBorder: '#3d342d',
+                darkInput: '#1f1a16',
+                lightCard: '#ffffff',
+                lightBorder: '#e8decb',
+                lightInput: '#f6eee2',
+              },
+              neutral: {
+                1: '#7a7e72',
+                2: '#3f4734',
+                3: '#738382',
+                4: '#e5e891',
+                5: '#7f7b61',
+              }
+            }
+          }
+        }
+      }
+    </script>
+
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Marked.js CDN for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style>
+      /* CSS Theme Definitions following Design Specifications */
+      :root {
+        --color-primary: #b25f40;
+        --color-primary-hover: #9a4e33;
+        --color-primary-light: rgba(178, 95, 64, 0.12);
+        --color-background: #fbf4e9;
+        --color-text: #3b322a;
+        --color-neutral-1: #7a7e72;
+        --color-neutral-2: #3f4734;
+        --color-neutral-3: #738382;
+        --color-neutral-4: #e5e891;
+        --color-neutral-5: #7f7b61;
+        --color-card: #ffffff;
+        --color-border: #e8decb;
+      }
+
+      .dark {
+        --color-background: #1a1613;
+        --color-text: #fbf4e9;
+        --color-card: #241e1a;
+        --color-card-hover: #2d2621;
+        --color-border: #3d342d;
+      }
+
+      /* Typographic utilities matching the Behance Arabic Typeface Reference */
+      .font-display-title {
+        font-family: 'El Messiri', 'Amiri', 'Playfair Display', serif;
+      }
+      .font-editorial-en {
+        font-family: 'Playfair Display', Georgia, serif;
+      }
+      .font-editorial-ar {
+        font-family: 'Amiri', 'El Messiri', serif;
+      }
+
+      /* Custom Scrollbars */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(178, 95, 64, 0.28);
+        border-radius: 9999px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(178, 95, 64, 0.55);
+      }
+
+      /* Markdown Output Styling */
+      .markdown-body {
+        line-height: 1.75;
+        font-size: 0.96rem;
+        unicode-bidi: plaintext;
+      }
+      .markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4 {
+        font-weight: 700;
+        margin-top: 1.25rem;
+        margin-bottom: 0.6rem;
+        color: inherit;
+      }
+      .markdown-body h1 { font-size: 1.45rem; border-bottom: 1px solid rgba(178, 95, 64, 0.25); padding-bottom: 0.4rem; }
+      .markdown-body h2 { font-size: 1.25rem; }
+      .markdown-body h3 { font-size: 1.1rem; }
+      .markdown-body p { margin-bottom: 0.85rem; }
+      .markdown-body ul { list-style-type: disc; }
+      .markdown-body ol { list-style-type: decimal; }
+      .markdown-body li { margin-bottom: 0.35rem; }
+
+      /* LTR-specific formatting for English / French replies */
+      .markdown-body.dir-ltr, [dir="ltr"] .markdown-body, .markdown-body[dir="ltr"] {
+        direction: ltr !important;
+        text-align: left !important;
+        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      }
+      .markdown-body.dir-ltr h1, .markdown-body.dir-ltr h2, .markdown-body.dir-ltr h3, .markdown-body.dir-ltr h4,
+      [dir="ltr"] .markdown-body h1, [dir="ltr"] .markdown-body h2, [dir="ltr"] .markdown-body h3, [dir="ltr"] .markdown-body h4 {
+        font-family: 'Playfair Display', Georgia, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, serif;
+        text-align: left !important;
+      }
+      .markdown-body.dir-ltr ul, .markdown-body.dir-ltr ol,
+      [dir="ltr"] .markdown-body ul, [dir="ltr"] .markdown-body ol {
+        margin-left: 1.5rem !important;
+        margin-right: 0 !important;
+        padding-left: 0.5rem !important;
+        padding-right: 0 !important;
+        text-align: left !important;
+      }
+      .markdown-body.dir-ltr li, [dir="ltr"] .markdown-body li,
+      .markdown-body.dir-ltr p, [dir="ltr"] .markdown-body p {
+        text-align: left !important;
+      }
+      .markdown-body.dir-ltr blockquote, [dir="ltr"] .markdown-body blockquote {
+        border-left: 4px solid #b25f40 !important;
+        border-right: none !important;
+        padding-left: 1rem !important;
+        padding-right: 0 !important;
+        margin: 1rem 0;
+        color: #7a7e72;
+        font-style: italic;
+        text-align: left !important;
+      }
+      .dark .markdown-body.dir-ltr blockquote, .dark [dir="ltr"] .markdown-body blockquote {
+        color: #a29d8f;
+      }
+      .markdown-body.dir-ltr th, .markdown-body.dir-ltr td,
+      [dir="ltr"] .markdown-body th, [dir="ltr"] .markdown-body td {
+        text-align: left !important;
+      }
+
+      /* RTL-specific formatting for Arabic replies */
+      .markdown-body.dir-rtl, [dir="rtl"] .markdown-body, .markdown-body[dir="rtl"] {
+        direction: rtl !important;
+        text-align: right !important;
+        font-family: 'Alexandria', 'Cairo', system-ui, sans-serif;
+      }
+      .markdown-body.dir-rtl h1, .markdown-body.dir-rtl h2, .markdown-body.dir-rtl h3, .markdown-body.dir-rtl h4,
+      [dir="rtl"] .markdown-body h1, [dir="rtl"] .markdown-body h2, [dir="rtl"] .markdown-body h3, [dir="rtl"] .markdown-body h4 {
+        font-family: 'El Messiri', 'Amiri', 'Playfair Display', serif;
+        text-align: right !important;
+      }
+      .markdown-body.dir-rtl ul, .markdown-body.dir-rtl ol,
+      [dir="rtl"] .markdown-body ul, [dir="rtl"] .markdown-body ol {
+        margin-right: 1.5rem !important;
+        margin-left: 0 !important;
+        padding-right: 0.5rem !important;
+        padding-left: 0 !important;
+        text-align: right !important;
+      }
+      .markdown-body.dir-rtl li, [dir="rtl"] .markdown-body li,
+      .markdown-body.dir-rtl p, [dir="rtl"] .markdown-body p {
+        text-align: right !important;
+      }
+      .markdown-body.dir-rtl blockquote, [dir="rtl"] .markdown-body blockquote {
+        border-right: 4px solid #b25f40 !important;
+        border-left: none !important;
+        padding-right: 1rem !important;
+        padding-left: 0 !important;
+        margin: 1rem 0;
+        color: #7a7e72;
+        font-style: italic;
+        text-align: right !important;
+      }
+      .dark .markdown-body.dir-rtl blockquote, .dark [dir="rtl"] .markdown-body blockquote {
+        color: #a29d8f;
+      }
+      .markdown-body.dir-rtl th, .markdown-body.dir-rtl td,
+      [dir="rtl"] .markdown-body th, [dir="rtl"] .markdown-body td {
+        text-align: right !important;
+      }
+      .markdown-body code {
+        background-color: rgba(178, 95, 64, 0.12);
+        color: #b25f40;
+        padding: 0.15rem 0.4rem;
+        border-radius: 0.35rem;
+        font-family: Consolas, Monaco, monospace;
+        font-size: 0.88em;
+      }
+      .dark .markdown-body code {
+        background-color: rgba(178, 95, 64, 0.2);
+        color: #c47051;
+      }
+      .markdown-body pre {
+        background-color: #1a1613;
+        border: 1px solid #3d342d;
+        color: #fbf4e9;
+        padding: 1rem;
+        border-radius: 0.75rem;
+        overflow-x: auto;
+        direction: ltr !important;
+        text-align: left !important;
+        margin: 1rem 0;
+      }
+      .markdown-body pre code {
+        background-color: transparent;
+        padding: 0;
+        color: inherit;
+      }
+      .markdown-body table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0;
+      }
+      .markdown-body th {
+        background-color: rgba(178, 95, 64, 0.08);
+        font-weight: 600;
+      }
+
+      /* Drag active pulse border */
+      .drag-active {
+        border-color: #b25f40 !important;
+        background-color: rgba(178, 95, 64, 0.08) !important;
+      }
+      .dark .drag-active {
+        border-color: #b25f40 !important;
+        background-color: rgba(178, 95, 64, 0.16) !important;
+      }
+    </style>
+  </head>
+  <body class="h-full bg-[#fbf4e9] text-[#3b322a] dark:bg-[#1a1613] dark:text-[#fbf4e9] transition-colors duration-200 antialiased font-sans select-text">
+
+    <!-- Fullscreen drag overlay -->
+    <div id="fullscreenDropOverlay" class="fixed inset-0 z-50 bg-[#1a1613]/80 backdrop-blur-sm hidden items-center justify-center p-6 transition-all duration-200">
+      <div class="max-w-md w-full bg-white dark:bg-[#241e1a] rounded-2xl p-8 border-2 border-dashed border-[#b25f40] shadow-2xl text-center">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[#b25f40]/15 text-[#b25f40] flex items-center justify-center">
+          <i data-lucide="cloud-upload" class="w-9 h-9 animate-bounce"></i>
+        </div>
+        <h3 class="font-display-title text-xl font-bold text-[#3b322a] dark:text-[#fbf4e9] mb-2">أفلت الملفات للرفع الفوري</h3>
+        <p class="text-sm text-[#7a7e72] dark:text-[#a29d8f]">يدعم ملفات PDF، المستندات، الملاحظات النصية والصور</p>
+      </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div class="h-full flex flex-col md:flex-row overflow-hidden">
+
+      <!-- Sidebar (Collapsible on mobile) -->
+      <aside id="sidebar" class="fixed inset-y-0 right-0 z-40 w-72 md:w-80 bg-white dark:bg-[#241e1a] border-l border-[#e8decb] dark:border-[#3d342d] flex flex-col transition-transform duration-300 transform translate-x-full md:translate-x-0 md:static">
+        
+        <!-- Sidebar Header & Branding -->
+        <div class="p-4 border-b border-[#e8decb] dark:border-[#3d342d] flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <img src="/public/icon.svg" alt="NotesApp Icon" class="w-9 h-9 rounded-xl shadow-sm shadow-[#b25f40]/25 shrink-0 object-contain" />
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="font-display-title font-bold text-base tracking-tight text-[#3b322a] dark:text-[#fbf4e9]">NotesApp</span>
+                <span class="text-[10px] font-semibold bg-[#e5e891]/25 text-[#3f4734] dark:bg-[#e5e891]/20 dark:text-[#e5e891] border border-[#e5e891]/40 px-1.5 py-0.5 rounded-full">Studio</span>
+              </div>
+              <p class="text-[11px] text-[#7a7e72] dark:text-[#a29d8f]">مساحة الملاحظات والتحليل الذكي</p>
+            </div>
+          </div>
+          
+          <!-- Close button on mobile -->
+          <button id="closeSidebarBtn" class="md:hidden p-1.5 text-[#7a7e72] hover:text-[#3b322a] dark:hover:text-[#fbf4e9] rounded-lg hover:bg-[#f6eee2] dark:hover:bg-[#2d2621]">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <!-- New Chat Button -->
+        <div class="p-3">
+          <button id="newChatBtn" class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-[#b25f40] hover:bg-[#9a4e33] dark:hover:bg-[#c47051] text-white font-medium text-sm transition-all shadow-sm hover:shadow active:scale-[0.99]">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            <span>محادثة جديدة</span>
+          </button>
+        </div>
+
+        <!-- Chat History Library Header & Search -->
+        <div class="px-3 pt-2 pb-1">
+          <div class="flex items-center justify-between text-xs font-semibold text-[#7a7e72] dark:text-[#a29d8f] px-2 uppercase tracking-wider mb-2">
+            <span>سجل المحادثات</span>
+            <span id="chatsCountBadge" class="text-[10px] bg-[#f6eee2] dark:bg-[#2d2621] text-[#3b322a] dark:text-[#fbf4e9] px-1.5 py-0.5 rounded-full font-mono">0</span>
+          </div>
+          <div class="relative">
+            <i data-lucide="search" class="w-3.5 h-3.5 absolute right-3 top-2.5 text-[#7a7e72]"></i>
+            <input id="searchChatsInput" type="text" placeholder="بحث في الملاحظات والمحادثات..." class="w-full text-xs pr-8 pl-3 py-1.5 bg-[#f6eee2] dark:bg-[#2d2621] border border-transparent focus:border-[#b25f40] rounded-lg outline-none text-[#3b322a] dark:text-[#fbf4e9] placeholder-[#7a7e72] transition" />
+          </div>
+        </div>
+
+        <!-- Chat History List (Scrollable) -->
+        <div class="flex-1 overflow-y-auto px-2 py-2 space-y-1" id="chatListContainer">
+          <!-- Chat list items rendered dynamically -->
+        </div>
+
+        <!-- Sidebar Footer Actions -->
+        <div class="p-3 border-t border-[#e8decb] dark:border-[#3d342d] space-y-2 bg-[#fbf4e9]/60 dark:bg-[#1f1a16]">
+          
+          <!-- Airtable Button (Fixed at Bottom, Target: _blank) -->
+          <a id="airtableBtn" href="https://airtable.com" target="_blank" rel="noopener noreferrer" class="w-full flex items-center justify-between p-2.5 rounded-xl border border-[#e8decb] dark:border-[#3d342d] bg-white dark:bg-[#241e1a] hover:border-[#b25f40] dark:hover:border-[#b25f40] hover:bg-[#b25f40]/5 dark:hover:bg-[#b25f40]/10 text-[#3b322a] dark:text-[#fbf4e9] transition-all group shadow-2xs">
+            <div class="flex items-center gap-2.5">
+              <div class="w-7 h-7 rounded-lg bg-[#b25f40]/15 text-[#b25f40] flex items-center justify-center">
+                <i data-lucide="database" class="w-4 h-4"></i>
+              </div>
+              <div class="text-right">
+                <div class="text-xs font-semibold text-[#3b322a] dark:text-[#fbf4e9] group-hover:text-[#b25f40] transition-colors">فتح قاعدة البيانات (Airtable)</div>
+                <div class="text-[10px] text-[#7a7e72] dark:text-[#a29d8f]">سجلات وجداول المعالجة</div>
+              </div>
+            </div>
+            <i data-lucide="external-link" class="w-3.5 h-3.5 text-[#7a7e72] group-hover:text-[#b25f40] transition-colors"></i>
+          </a>
+
+          <!-- Bottom Utility Row: Theme Toggle & Settings -->
+          <div class="flex items-center justify-between pt-1 text-xs text-[#7a7e72] dark:text-[#a29d8f]">
+            <button id="themeToggleBtn" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[#f6eee2] dark:hover:bg-[#2d2621] transition text-[#3b322a] dark:text-[#fbf4e9]">
+              <i data-lucide="sun" class="w-4 h-4 hidden dark:inline text-[#b25f40]"></i>
+              <i data-lucide="moon" class="w-4 h-4 inline dark:hidden text-[#b25f40]"></i>
+              <span id="themeLabel">الوضع النهاري</span>
+            </button>
+
+            <button id="openSettingsBtn" class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg hover:bg-[#f6eee2] dark:hover:bg-[#2d2621] transition text-[#3b322a] dark:text-[#fbf4e9]">
+              <i data-lucide="settings" class="w-4 h-4"></i>
+              <span>الإعدادات</span>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Mobile Backdrop -->
+      <div id="mobileBackdrop" class="fixed inset-0 bg-[#1a1613]/70 backdrop-blur-2xs z-30 hidden md:hidden"></div>
+
+      <!-- Main Work & Chat Interface -->
+      <main class="flex-1 flex flex-col h-full overflow-hidden bg-[#fbf4e9] dark:bg-[#1a1613]">
+        
+        <!-- Top App Bar -->
+        <header class="h-14 border-b border-[#e8decb] dark:border-[#3d342d] px-4 flex items-center justify-between bg-white/95 dark:bg-[#241e1a]/95 backdrop-blur-sm z-10 shrink-0">
+          <div class="flex items-center gap-3">
+            <!-- Mobile Menu Trigger -->
+            <button id="mobileMenuBtn" class="md:hidden p-2 text-[#3b322a] dark:text-[#fbf4e9] rounded-lg hover:bg-[#f6eee2] dark:hover:bg-[#2d2621]">
+              <i data-lucide="menu" class="w-5 h-5"></i>
+            </button>
+
+            <!-- Chat Title & Info -->
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-[#b25f40] animate-pulse"></span>
+              <h2 id="currentChatTitleHeader" class="font-display-title text-sm md:text-base font-bold text-[#3b322a] dark:text-[#fbf4e9] truncate max-w-[200px] md:max-w-md">محادثة جديدة</h2>
+            </div>
+          </div>
+
+          <!-- Top Right Controls -->
+          <div class="flex items-center gap-2">
+            <!-- Webhook Connection Pill -->
+            <div id="webhookStatusIndicator" class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs bg-[#b25f40]/12 dark:bg-[#b25f40]/20 text-[#b25f40] dark:text-[#c47051] border border-[#b25f40]/30 cursor-pointer hover:bg-[#b25f40]/20 transition" title="إعدادات n8n Webhook">
+              <span class="w-1.5 h-1.5 rounded-full bg-[#b25f40]"></span>
+              <span class="font-medium text-[11px]" id="webhookStatusText">n8n Webhook</span>
+            </div>
+
+            <!-- Clear Current Chat -->
+            <button id="clearChatBtn" class="p-2 text-[#7a7e72] hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-[#f6eee2] dark:hover:bg-[#2d2621] transition" title="مسح رسائل الجلسة الحالية">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </header>
+
+        <!-- Messages Area (Scrollable) -->
+        <div id="messagesContainer" class="flex-1 overflow-y-auto px-4 py-6 md:px-8 space-y-6">
+          
+          <!-- Empty State (Shown when active chat is empty) -->
+          <div id="emptyState" class="h-full flex flex-col items-center justify-center text-center max-w-xl mx-auto py-12 px-4">
+            <div class="w-20 h-20 rounded-3xl overflow-hidden shadow-lg shadow-[#b25f40]/25 mb-5 flex items-center justify-center border border-[#b25f40]/25 p-1 bg-white/70 dark:bg-[#241e1a]">
+              <img src="/public/icon.svg" alt="NotesApp Icon" class="w-full h-full rounded-2xl object-contain" />
+            </div>
+            
+            <h1 class="font-display-title text-2xl md:text-3xl font-bold text-[#3b322a] dark:text-[#fbf4e9] mb-2">مساحة الملاحظات والدراسة الذكية</h1>
+            <p class="text-sm text-[#7a7e72] dark:text-[#a29d8f] leading-relaxed mb-6">
+              واجهة تفاعلية خالية من التشتيت لتطبيق NotesApp بالهوية البصرية الجديدة. اكتب استفسارك أو أسقط المستندات لتحليلها ومزامنتها عبر n8n Webhook.
+            </p>
+
+            <!-- Quick Suggestions Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 w-full text-right">
+              <button class="suggestion-card p-3 rounded-xl border border-[#e8decb] dark:border-[#3d342d] bg-white dark:bg-[#241e1a] hover:border-[#b25f40] dark:hover:border-[#b25f40] text-xs text-[#3b322a] dark:text-[#fbf4e9] transition text-right group shadow-2xs">
+                <div class="font-semibold text-[#3b322a] dark:text-[#fbf4e9] mb-1 flex items-center gap-1.5 group-hover:text-[#b25f40] transition-colors">
+                  <i data-lucide="file-text" class="w-3.5 h-3.5 text-[#b25f40]"></i>
+                  <span>تلخيص المستندات</span>
+                </div>
+                <p class="text-[11px] text-[#7a7e72] dark:text-[#a29d8f]">استخرج الأفكار الرئيسية والمحاور الجوهرية بدقة</p>
+              </button>
+
+              <button class="suggestion-card p-3 rounded-xl border border-[#e8decb] dark:border-[#3d342d] bg-white dark:bg-[#241e1a] hover:border-[#b25f40] dark:hover:border-[#b25f40] text-xs text-[#3b322a] dark:text-[#fbf4e9] transition text-right group shadow-2xs">
+                <div class="font-semibold text-[#3b322a] dark:text-[#fbf4e9] mb-1 flex items-center gap-1.5 group-hover:text-[#b25f40] transition-colors">
+                  <i data-lucide="list-checks" class="w-3.5 h-3.5 text-[#b25f40]"></i>
+                  <span>نقاط العمل والملاحظات</span>
+                </div>
+                <p class="text-[11px] text-[#7a7e72] dark:text-[#a29d8f]">تصنيف المهام والجداول المستخلصة من الملفات</p>
+              </button>
+
+              <button class="suggestion-card p-3 rounded-xl border border-[#e8decb] dark:border-[#3d342d] bg-white dark:bg-[#241e1a] hover:border-[#b25f40] dark:hover:border-[#b25f40] text-xs text-[#3b322a] dark:text-[#fbf4e9] transition text-right group shadow-2xs">
+                <div class="font-semibold text-[#3b322a] dark:text-[#fbf4e9] mb-1 flex items-center gap-1.5 group-hover:text-[#b25f40] transition-colors">
+                  <i data-lucide="git-compare" class="w-3.5 h-3.5 text-[#b25f40]"></i>
+                  <span>مقارنة وتحليل</span>
+                </div>
+                <p class="text-[11px] text-[#7a7e72] dark:text-[#a29d8f]">ربط النتائج وتحديث قاعدة بيانات Airtable</p>
+              </button>
+            </div>
+          </div>
+
+          <!-- Dynamic Messages List -->
+          <div id="messagesList" class="max-w-3xl mx-auto space-y-6 pb-4">
+            <!-- Messages inserted here via JS -->
+          </div>
+
+          <!-- Processing / Loading Indicator -->
+          <div id="loadingIndicator" class="max-w-3xl mx-auto hidden">
+            <div class="flex items-start gap-3">
+              <img src="/public/icon.svg" alt="Bot Icon" class="w-8 h-8 rounded-xl shrink-0 shadow-xs object-contain" />
+              <div class="bg-white dark:bg-[#241e1a] border border-[#e8decb] dark:border-[#3d342d] rounded-2xl rounded-tr-none px-4 py-3 shadow-2xs">
+                <div class="flex items-center gap-2 text-sm text-[#3b322a] dark:text-[#fbf4e9]">
+                  <div class="flex space-x-1 space-x-reverse">
+                    <span class="w-2 h-2 rounded-full bg-[#b25f40] animate-bounce"></span>
+                    <span class="w-2 h-2 rounded-full bg-[#b25f40] animate-bounce [animation-delay:0.2s]"></span>
+                    <span class="w-2 h-2 rounded-full bg-[#b25f40] animate-bounce [animation-delay:0.4s]"></span>
+                  </div>
+                  <span class="font-medium text-xs">جاري التحليل والمعالجة عبر n8n...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Input & Upload Panel -->
+        <div class="border-t border-[#e8decb] dark:border-[#3d342d] bg-white dark:bg-[#241e1a] px-4 py-3 md:px-8 shrink-0">
+          <div class="max-w-3xl mx-auto">
+            
+            <!-- Netlify-style Drag and Drop Area (Collapsible / Toggleable) -->
+            <div id="dropZoneContainer" class="mb-3 transition-all duration-200">
+              <div id="dropZone" class="relative border-2 border-dashed border-[#e8decb] dark:border-[#3d342d] hover:border-[#b25f40] dark:hover:border-[#b25f40] bg-[#fbf4e9]/60 dark:bg-[#1f1a16]/60 rounded-2xl p-4 text-center cursor-pointer transition-all duration-200 group">
+                <input type="file" id="fileInput" multiple class="hidden" accept=".pdf,.txt,.md,.csv,.doc,.docx,.png,.jpg,.jpeg,.json" />
+                
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-[#b25f40]/15 text-[#b25f40] flex items-center justify-center group-hover:scale-105 transition-transform">
+                    <i data-lucide="upload-cloud" class="w-5 h-5"></i>
+                  </div>
+                  <div class="text-right sm:text-right">
+                    <p class="text-xs font-semibold text-[#3b322a] dark:text-[#fbf4e9]">
+                      اسحب وأفلت الملفات هنا، أو <span class="text-[#b25f40] underline underline-offset-2">تصفح من جهازك</span>
+                    </p>
+                    <p class="text-[11px] text-[#7a7e72] dark:text-[#a29d8f] mt-0.5">يدعم ملفات PDF، المستندات النصية، والملاحظات (بدون وسائط أو فيديو)</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Uploaded Files Preview & Progress Bar Container -->
+            <div id="filePreviewList" class="hidden mb-3 space-y-2">
+              <!-- Uploaded files previews rendered dynamically -->
+            </div>
+
+            <!-- Chat Input Box -->
+            <div class="relative bg-[#fbf4e9]/70 dark:bg-[#1f1a16] border border-[#e8decb] dark:border-[#3d342d] rounded-2xl shadow-sm focus-within:border-[#b25f40] focus-within:ring-2 focus-within:ring-[#b25f40]/20 transition-all">
+              
+              <!-- Textarea auto-expands -->
+              <textarea 
+                id="chatInput" 
+                rows="1" 
+                dir="auto"
+                placeholder="اكتب استفسارك، أو لخص المستندات المرفقة... (اضغط Enter للإرسال)" 
+                class="w-full text-sm bg-transparent border-0 outline-none px-4 pt-3.5 pb-2 resize-none text-[#3b322a] dark:text-[#fbf4e9] placeholder-[#7a7e72] max-h-40 overflow-y-auto leading-relaxed"
+              ></textarea>
+
+              <!-- Controls bar inside input box -->
+              <div class="flex items-center justify-between px-3 py-2 border-t border-[#e8decb]/60 dark:border-[#3d342d]">
+                <div class="flex items-center gap-1.5">
+                  <!-- Attach File Button -->
+                  <button id="attachFileBtn" class="p-1.5 text-[#7a7e72] hover:text-[#b25f40] rounded-lg hover:bg-[#f6eee2] dark:hover:bg-[#2d2621] transition" title="إرفاق ملفات">
+                    <i data-lucide="paperclip" class="w-4 h-4"></i>
+                  </button>
+                  <span id="attachedCountLabel" class="hidden text-[11px] font-medium text-[#b25f40] bg-[#b25f40]/15 border border-[#b25f40]/25 px-2 py-0.5 rounded-full font-mono">
+                    0 ملفات
+                  </span>
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <span class="text-[10px] text-[#7a7e72] dark:text-[#a29d8f] hidden sm:inline">Shift + Enter لسطر جديد</span>
+                  <!-- Send Button -->
+                  <button 
+                    id="sendBtn" 
+                    disabled 
+                    class="w-8 h-8 rounded-xl bg-[#b25f40] hover:bg-[#9a4e33] dark:hover:bg-[#c47051] disabled:bg-[#e8decb] dark:disabled:bg-[#3d342d] text-white disabled:text-[#7a7e72] flex items-center justify-center transition-all disabled:cursor-not-allowed shadow-2xs hover:shadow active:scale-95"
+                    title="إرسال"
+                  >
+                    <i data-lucide="arrow-up" class="w-4 h-4"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Subtext note -->
+            <p class="text-[11px] text-center text-[#7a7e72] dark:text-[#a29d8f] mt-2">
+              يتم إرسال المدخلات ومعالجة البيانات بشكل آمن عبر n8n Webhook
+            </p>
+          </div>
+        </div>
+
+      </main>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="fixed inset-0 z-50 bg-[#1a1613]/70 backdrop-blur-2xs hidden items-center justify-center p-4">
+      <div class="bg-white dark:bg-[#241e1a] rounded-2xl max-w-md w-full p-6 shadow-2xl border border-[#e8decb] dark:border-[#3d342d]">
+        <div class="flex items-center justify-between pb-4 border-b border-[#e8decb] dark:border-[#3d342d] mb-4">
+          <div class="flex items-center gap-2">
+            <i data-lucide="sliders-horizontal" class="w-5 h-5 text-[#b25f40]"></i>
+            <h3 class="font-display-title text-base font-bold text-[#3b322a] dark:text-[#fbf4e9]">إعدادات التكامل والربط البرمجي</h3>
+          </div>
+          <button id="closeSettingsModalBtn" class="text-[#7a7e72] hover:text-[#3b322a] dark:hover:text-[#fbf4e9] p-1 rounded-lg">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <div class="space-y-4">
+          <!-- Webhook URL Field -->
+          <div>
+            <label class="block text-xs font-semibold text-[#3b322a] dark:text-[#fbf4e9] mb-1.5">
+              رابط n8n Webhook (N8N_WEBHOOK_URL)
+            </label>
+            <input 
+              id="webhookUrlInput" 
+              type="url" 
+              placeholder="https://drissco.app.n8n.cloud/webhook-test/notesapp" 
+              class="w-full text-xs p-2.5 rounded-xl border border-[#e8decb] dark:border-[#3d342d] bg-[#fbf4e9] dark:bg-[#1f1a16] text-[#3b322a] dark:text-[#fbf4e9] focus:outline-none focus:border-[#b25f40] font-mono"
+            />
+            <p class="text-[11px] text-[#7a7e72] dark:text-[#a29d8f] mt-1">يُرسل طلب POST مع الحقول والنصوص والمستندات المرفقة.</p>
+          </div>
+
+          <!-- Airtable URL Field -->
+          <div>
+            <label class="block text-xs font-semibold text-[#3b322a] dark:text-[#fbf4e9] mb-1.5">
+              رابط قاعدة بيانات Airtable
+            </label>
+            <input 
+              id="airtableUrlInput" 
+              type="url" 
+              placeholder="https://airtable.com/app..." 
+              class="w-full text-xs p-2.5 rounded-xl border border-[#e8decb] dark:border-[#3d342d] bg-[#fbf4e9] dark:bg-[#1f1a16] text-[#3b322a] dark:text-[#fbf4e9] focus:outline-none focus:border-[#b25f40] font-mono"
+            />
+            <p class="text-[11px] text-[#7a7e72] dark:text-[#a29d8f] mt-1">يفتح الرابط في تبويب جديد عند النقر على الزر المثبت في أسفل الشريط الجانبي.</p>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 mt-6 pt-4 border-t border-[#e8decb] dark:border-[#3d342d]">
+          <button id="cancelSettingsBtn" class="px-4 py-2 text-xs font-medium text-[#7a7e72] dark:text-[#a29d8f] hover:bg-[#f6eee2] dark:hover:bg-[#2d2621] rounded-xl transition">
+            إلغاء
+          </button>
+          <button id="saveSettingsBtn" class="px-5 py-2 text-xs font-medium bg-[#b25f40] hover:bg-[#9a4e33] text-white rounded-xl transition shadow-2xs">
+            حفظ التغييرات
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rename Chat Modal -->
+    <div id="renameModal" class="fixed inset-0 z-50 bg-[#1a1613]/70 backdrop-blur-2xs hidden items-center justify-center p-4">
+      <div class="bg-white dark:bg-[#241e1a] rounded-2xl max-w-sm w-full p-5 shadow-2xl border border-[#e8decb] dark:border-[#3d342d]">
+        <h3 class="font-display-title text-sm font-bold text-[#3b322a] dark:text-[#fbf4e9] mb-3">تعديل اسم المحادثة</h3>
+        <input 
+          id="renameChatInput" 
+          type="text" 
+          class="w-full text-sm p-2.5 rounded-xl border border-[#e8decb] dark:border-[#3d342d] bg-[#fbf4e9] dark:bg-[#1f1a16] text-[#3b322a] dark:text-[#fbf4e9] focus:outline-none focus:border-[#b25f40] mb-4"
+        />
+        <div class="flex items-center justify-end gap-2">
+          <button id="cancelRenameBtn" class="px-3.5 py-1.5 text-xs text-[#7a7e72] dark:text-[#a29d8f] hover:bg-[#f6eee2] dark:hover:bg-[#2d2621] rounded-lg">إلغاء</button>
+          <button id="confirmRenameBtn" class="px-4 py-1.5 text-xs font-medium bg-[#b25f40] text-white rounded-lg hover:bg-[#9a4e33]">حفظ</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 left-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+      <div class="bg-[#241e1a] text-[#fbf4e9] dark:bg-white dark:text-[#3b322a] px-4 py-2.5 rounded-xl shadow-lg text-xs font-medium flex items-center gap-2 border border-[#3d342d] dark:border-[#e8decb]">
+        <i data-lucide="check-circle" class="w-4 h-4 text-[#b25f40]"></i>
+        <span id="toastMessage">تمت العملية بنجاح</span>
+      </div>
+    </div>
+
+    <!-- Application Script (Vanilla JS) -->
+    <script>
+      /**
+       * 3. الربط البرمجي والمعالجة (n8n Webhook Integration)
+       * N8N_WEBHOOK_URL: رابط الـ Webhook الخاص بـ n8n المعتمد للربط
+       */
+      const N8N_WEBHOOK_URL = "https://drissco.app.n8n.cloud/webhook-test/notesapp";
+
+      // Application State
+      let chats = [];
+      let currentChatId = null;
+      let stagedFiles = [];
+      let activeWebhookUrl = N8N_WEBHOOK_URL;
+      let activeAirtableUrl = "https://airtable.com";
+      let editingChatId = null;
+
+      // DOM Elements
+      const sidebar = document.getElementById("sidebar");
+      const mobileBackdrop = document.getElementById("mobileBackdrop");
+      const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+      const closeSidebarBtn = document.getElementById("closeSidebarBtn");
+      const newChatBtn = document.getElementById("newChatBtn");
+      const chatListContainer = document.getElementById("chatListContainer");
+      const searchChatsInput = document.getElementById("searchChatsInput");
+      const chatsCountBadge = document.getElementById("chatsCountBadge");
+      const airtableBtn = document.getElementById("airtableBtn");
+      const themeToggleBtn = document.getElementById("themeToggleBtn");
+      const themeLabel = document.getElementById("themeLabel");
+      const currentChatTitleHeader = document.getElementById("currentChatTitleHeader");
+      const clearChatBtn = document.getElementById("clearChatBtn");
+      const emptyState = document.getElementById("emptyState");
+      const messagesContainer = document.getElementById("messagesContainer");
+      const messagesList = document.getElementById("messagesList");
+      const loadingIndicator = document.getElementById("loadingIndicator");
+      const dropZone = document.getElementById("dropZone");
+      const fileInput = document.getElementById("fileInput");
+      const filePreviewList = document.getElementById("filePreviewList");
+      const attachFileBtn = document.getElementById("attachFileBtn");
+      const attachedCountLabel = document.getElementById("attachedCountLabel");
+      const chatInput = document.getElementById("chatInput");
+      const sendBtn = document.getElementById("sendBtn");
+      const fullscreenDropOverlay = document.getElementById("fullscreenDropOverlay");
+      const webhookStatusIndicator = document.getElementById("webhookStatusIndicator");
+      const webhookStatusText = document.getElementById("webhookStatusText");
+
+      // Settings Modal DOM
+      const settingsModal = document.getElementById("settingsModal");
+      const openSettingsBtn = document.getElementById("openSettingsBtn");
+      const closeSettingsModalBtn = document.getElementById("closeSettingsModalBtn");
+      const cancelSettingsBtn = document.getElementById("cancelSettingsBtn");
+      const saveSettingsBtn = document.getElementById("saveSettingsBtn");
+      const webhookUrlInput = document.getElementById("webhookUrlInput");
+      const airtableUrlInput = document.getElementById("airtableUrlInput");
+
+      // Rename Modal DOM
+      const renameModal = document.getElementById("renameModal");
+      const renameChatInput = document.getElementById("renameChatInput");
+      const cancelRenameBtn = document.getElementById("cancelRenameBtn");
+      const confirmRenameBtn = document.getElementById("confirmRenameBtn");
+
+      // Toast Notification
+      const toast = document.getElementById("toast");
+      const toastMessage = document.getElementById("toastMessage");
+
+      // Initialization
+      function init() {
+        loadSettings();
+        loadTheme();
+        loadChats();
+        setupEventListeners();
+        setupDragAndDrop();
+        refreshLucideIcons();
+      }
+
+      // Refresh Lucide SVG Icons
+      function refreshLucideIcons() {
+        if (window.lucide) {
+          window.lucide.createIcons();
+        }
+      }
+
+      // Show Toast
+      function showToast(msg) {
+        toastMessage.textContent = msg;
+        toast.classList.remove("translate-y-20", "opacity-0");
+        setTimeout(() => {
+          toast.classList.add("translate-y-20", "opacity-0");
+        }, 3000);
+      }
+
+      // Theme Management
+      function loadTheme() {
+        const savedTheme = localStorage.getItem("notebook_theme") || "dark";
+        if (savedTheme === "dark") {
+          document.documentElement.classList.add("dark");
+          themeLabel.textContent = "الوضع النهاري";
+        } else {
+          document.documentElement.classList.remove("dark");
+          themeLabel.textContent = "الوضع المظلم";
+        }
+      }
+
+      function toggleTheme() {
+        const isDark = document.documentElement.classList.toggle("dark");
+        localStorage.setItem("notebook_theme", isDark ? "dark" : "light");
+        themeLabel.textContent = isDark ? "الوضع النهاري" : "الوضع المظلم";
+        refreshLucideIcons();
+      }
+
+      // Load Settings from LocalStorage
+      function loadSettings() {
+        const savedWebhook = localStorage.getItem("notebook_webhook_url");
+        if (savedWebhook && savedWebhook.trim() !== "" && savedWebhook !== "PLACEHOLDER_URL") {
+          activeWebhookUrl = savedWebhook.trim();
+        } else {
+          activeWebhookUrl = N8N_WEBHOOK_URL;
+          localStorage.setItem("notebook_webhook_url", N8N_WEBHOOK_URL);
+        }
+
+        const savedAirtable = localStorage.getItem("notebook_airtable_url");
+        if (savedAirtable && savedAirtable.trim() !== "") {
+          activeAirtableUrl = savedAirtable.trim();
+        } else {
+          activeAirtableUrl = "https://airtable.com";
+        }
+
+        airtableBtn.href = activeAirtableUrl;
+
+        // Update pill
+        if (activeWebhookUrl && activeWebhookUrl !== "PLACEHOLDER_URL") {
+          webhookStatusText.textContent = "n8n متصل: notesapp";
+        } else {
+          webhookStatusText.textContent = "n8n Webhook";
+        }
+      }
+
+      // Chats Management
+      function loadChats() {
+        const savedChats = localStorage.getItem("notebook_chats");
+        if (savedChats) {
+          try {
+            chats = JSON.parse(savedChats);
+          } catch (e) {
+            chats = [];
+          }
+        }
+
+        if (chats.length === 0) {
+          createNewChat(false);
+        } else {
+          const lastActiveId = localStorage.getItem("notebook_active_chat_id");
+          const existing = chats.find(c => c.id === lastActiveId);
+          currentChatId = existing ? existing.id : chats[0].id;
+          renderChatList();
+          renderActiveChat();
+        }
+      }
+
+      function saveChats() {
+        localStorage.setItem("notebook_chats", JSON.stringify(chats));
+        localStorage.setItem("notebook_active_chat_id", currentChatId);
+        renderChatList();
+      }
+
+      function createNewChat(switchNow = true) {
+        const newChat = {
+          id: "chat_" + Date.now(),
+          title: "جلسة جديدة",
+          createdAt: new Date().toISOString(),
+          messages: []
+        };
+        chats.unshift(newChat);
+        currentChatId = newChat.id;
+        saveChats();
+        if (switchNow) {
+          renderActiveChat();
+          // on mobile close sidebar
+          closeMobileSidebar();
+          chatInput.focus();
+        }
+      }
+
+      function renderChatList(filterQuery = "") {
+        chatListContainer.innerHTML = "";
+        const filtered = chats.filter(c => 
+          c.title.toLowerCase().includes(filterQuery.toLowerCase())
+        );
+
+        chatsCountBadge.textContent = filtered.length;
+
+        if (filtered.length === 0) {
+          chatListContainer.innerHTML = `
+            <div class="text-center py-6 text-xs text-slate-400">
+              لا توجد محادثات تطابق البحث
+            </div>
+          `;
+          return;
+        }
+
+        filtered.forEach(chat => {
+          const isActive = chat.id === currentChatId;
+          const div = document.createElement("div");
+          div.className = `group relative flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all text-xs ${
+            isActive 
+              ? "bg-[#b25f40]/10 dark:bg-[#b25f40]/20 text-[#b25f40] dark:text-[#fbf4e9] font-medium border border-[#b25f40]/30 shadow-2xs" 
+              : "text-[#3b322a] dark:text-[#fbf4e9] hover:bg-[#f6eee2] dark:hover:bg-[#2d2621]"
+          }`;
+
+          div.innerHTML = `
+            <div class="flex items-center gap-2 truncate flex-1 pl-2">
+              <i data-lucide="${isActive ? 'message-square-text' : 'message-square'}" class="w-3.5 h-3.5 shrink-0 ${isActive ? 'text-[#b25f40]' : 'text-[#7a7e72]'}"></i>
+              <span class="truncate">${escapeHtml(chat.title)}</span>
+            </div>
+            <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button class="rename-btn p-1 text-[#7a7e72] hover:text-[#b25f40] rounded transition" title="تعديل الاسم" data-id="${chat.id}">
+                <i data-lucide="edit-3" class="w-3 h-3"></i>
+              </button>
+              <button class="delete-btn p-1 text-[#7a7e72] hover:text-rose-600 dark:hover:text-rose-400 rounded transition" title="حذف المحادثة" data-id="${chat.id}">
+                <i data-lucide="trash" class="w-3 h-3"></i>
+              </button>
+            </div>
+          `;
+
+          // Select Chat click
+          div.addEventListener("click", (e) => {
+            if (e.target.closest(".rename-btn") || e.target.closest(".delete-btn")) return;
+            currentChatId = chat.id;
+            saveChats();
+            renderActiveChat();
+            closeMobileSidebar();
+          });
+
+          // Rename Action
+          div.querySelector(".rename-btn").addEventListener("click", (e) => {
+            e.stopPropagation();
+            openRenameModal(chat.id, chat.title);
+          });
+
+          // Delete Action
+          div.querySelector(".delete-btn").addEventListener("click", (e) => {
+            e.stopPropagation();
+            deleteChat(chat.id);
+          });
+
+          chatListContainer.appendChild(div);
+        });
+
+        refreshLucideIcons();
+      }
+
+      function deleteChat(chatId) {
+        if (chats.length <= 1) {
+          // Clear current
+          chats = [];
+          createNewChat(true);
+          showToast("تمت إعادة ضبط المحادثة");
+          return;
+        }
+
+        chats = chats.filter(c => c.id !== chatId);
+        if (currentChatId === chatId) {
+          currentChatId = chats[0].id;
+        }
+        saveChats();
+        renderActiveChat();
+        showToast("تم حذف المحادثة بنجاح");
+      }
+
+      function openRenameModal(chatId, currentTitle) {
+        editingChatId = chatId;
+        renameChatInput.value = currentTitle;
+        renameModal.classList.remove("hidden");
+        renameModal.classList.add("flex");
+        renameChatInput.focus();
+        renameChatInput.select();
+      }
+
+      function closeRenameModal() {
+        editingChatId = null;
+        renameModal.classList.add("hidden");
+        renameModal.classList.remove("flex");
+      }
+
+      function confirmRename() {
+        const val = renameChatInput.value.trim();
+        if (val && editingChatId) {
+          const chat = chats.find(c => c.id === editingChatId);
+          if (chat) {
+            chat.title = val;
+            saveChats();
+            renderActiveChat();
+            showToast("تم تعديل اسم المحادثة");
+          }
+        }
+        closeRenameModal();
+      }
+
+      function renderActiveChat() {
+        const chat = chats.find(c => c.id === currentChatId);
+        if (!chat) return;
+
+        currentChatTitleHeader.textContent = chat.title;
+
+        if (chat.messages.length === 0) {
+          emptyState.classList.remove("hidden");
+          messagesList.innerHTML = "";
+        } else {
+          emptyState.classList.add("hidden");
+          messagesList.innerHTML = "";
+          chat.messages.forEach(msg => {
+            appendMessageNode(msg);
+          });
+          scrollToBottom();
+        }
+
+        refreshLucideIcons();
+      }
+
+      // Language & text direction detector (English/French -> LTR, Arabic -> RTL)
+      function detectTextDirection(text) {
+        if (!text || typeof text !== "string") return "rtl";
+
+        // Remove markdown code blocks, backticks, URLs, and HTML tags
+        const stripped = text
+          .replace(/```[\s\S]*?```/g, "")
+          .replace(/`[^`]*`/g, "")
+          .replace(/https?:\/\/\S+/g, "")
+          .replace(/<[^>]+>/g, "")
+          .trim();
+
+        if (!stripped) return "ltr";
+
+        // Arabic character range (standard Arabic, supplement, extended, presentation forms)
+        const arabicPattern = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/g;
+        
+        // Latin character range (English + French accented characters: é, è, ê, ë, à, â, ç, î, ï, ô, ù, û, ü, etc.)
+        const latinPattern = /[a-zA-Z\u00C0-\u024F]/g;
+
+        const arabicMatches = stripped.match(arabicPattern);
+        const latinMatches = stripped.match(latinPattern);
+
+        const arabicCount = arabicMatches ? arabicMatches.length : 0;
+        const latinCount = latinMatches ? latinMatches.length : 0;
+
+        if (latinCount > arabicCount) {
+          return "ltr";
+        }
+        if (arabicCount > latinCount) {
+          return "rtl";
+        }
+
+        // Fallback: check first strong directional character
+        for (let i = 0; i < stripped.length; i++) {
+          const char = stripped[i];
+          if (/[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/.test(char)) {
+            return "rtl";
+          }
+          if (/[a-zA-Z\u00C0-\u024F]/.test(char)) {
+            return "ltr";
+          }
+        }
+
+        return "ltr";
+      }
+
+      function appendMessageNode(msg) {
+        const isUser = msg.role === "user";
+        const dir = detectTextDirection(msg.content);
+        const isLtr = dir === "ltr";
+
+        const wrapper = document.createElement("div");
+        wrapper.className = `flex gap-3 ${isUser ? 'justify-start flex-row-reverse' : 'justify-start'}`;
+
+        // Avatar
+        const avatar = document.createElement("div");
+        if (isUser) {
+          avatar.className = "w-8 h-8 rounded-xl flex items-center justify-center shrink-0 shadow-2xs bg-[#e8decb] dark:bg-[#3d342d] text-[#3b322a] dark:text-[#fbf4e9]";
+          avatar.innerHTML = `<i data-lucide="user" class="w-4 h-4"></i>`;
+        } else {
+          avatar.className = "w-8 h-8 rounded-xl overflow-hidden shrink-0 shadow-xs";
+          avatar.innerHTML = `<img src="/public/icon.svg" alt="NotebookLM Icon" class="w-full h-full object-contain" />`;
+        }
+
+        // Content Box
+        const contentBox = document.createElement("div");
+        contentBox.setAttribute("dir", dir);
+        contentBox.className = `max-w-[85%] sm:max-w-[78%] rounded-2xl p-4 text-sm leading-relaxed shadow-2xs ${
+          isUser 
+            ? 'bg-[#b25f40] text-white rounded-tl-none font-medium' 
+            : 'bg-white dark:bg-[#241e1a] border border-[#e8decb] dark:border-[#3d342d] text-[#3b322a] dark:text-[#fbf4e9] rounded-tr-none'
+        } ${isLtr ? 'text-left' : 'text-right'}`;
+
+        // Attached Files preview & metadata if any
+        if (msg.files && msg.files.length > 0) {
+          const filesDiv = document.createElement("div");
+          filesDiv.className = "flex flex-col gap-2 mb-3";
+
+          msg.files.forEach(f => {
+            const hasWebContentView = Boolean(f.webcontentview || f.webContentView);
+            const previewUrl = f.webcontentview || f.webContentView;
+            const fileId = f.id || f.fileId || f.ID_file || "";
+            const fileType = f.entireFileType || f.fileType || f.mimeType || "application/octet-stream";
+
+            if (f.isImage && hasWebContentView) {
+              const imgContainer = document.createElement("div");
+              imgContainer.className = `p-2 rounded-xl border ${
+                isUser 
+                  ? 'bg-black/15 border-white/20 text-white' 
+                  : 'bg-[#fbf4e9] dark:bg-[#1f1a16] border-[#e8decb] dark:border-[#3d342d] text-[#3b322a] dark:text-[#fbf4e9]'
+              }`;
+              imgContainer.innerHTML = `
+                <div class="relative group overflow-hidden rounded-lg mb-1.5 max-w-sm">
+                  <img src="${previewUrl}" alt="${escapeHtml(f.name)}" class="w-full max-h-48 object-cover rounded-lg border border-black/10" />
+                  <a href="${previewUrl}" target="_blank" download="${escapeHtml(f.name)}" class="absolute bottom-2 left-2 px-2 py-1 bg-black/75 hover:bg-black text-white rounded text-[10px] flex items-center gap-1 backdrop-blur-xs transition">
+                    <i data-lucide="external-link" class="w-3 h-3"></i>
+                    <span>webcontentview</span>
+                  </a>
+                </div>
+                <div class="flex flex-wrap items-center gap-1.5 text-[10px] font-mono">
+                  <span class="font-semibold truncate max-w-[140px]">${escapeHtml(f.name)}</span>
+                  <span class="px-1.5 py-0.5 rounded ${isUser ? 'bg-white/20 text-white' : 'bg-[#b25f40]/15 text-[#b25f40]'} font-bold">ID: ${escapeHtml(fileId)}</span>
+                  <span class="px-1.5 py-0.5 rounded ${isUser ? 'bg-white/20 text-white' : 'bg-[#e8decb] dark:bg-[#3d342d] text-[#3b322a] dark:text-[#fbf4e9]'}">${escapeHtml(fileType)}</span>
+                  <span class="opacity-80">${f.size || ''}</span>
+                </div>
+              `;
+              filesDiv.appendChild(imgContainer);
+            } else {
+              const pill = document.createElement("div");
+              pill.className = `p-2 rounded-xl border flex flex-col gap-1 text-[11px] ${
+                isUser 
+                  ? 'bg-white/15 border-white/25 text-white' 
+                  : 'bg-[#fbf4e9] dark:bg-[#1f1a16] border-[#e8decb] dark:border-[#3d342d] text-[#3b322a] dark:text-[#fbf4e9]'
+              }`;
+              pill.innerHTML = `
+                <div class="flex items-center justify-between gap-2">
+                  <div class="flex items-center gap-1.5 truncate">
+                    <i data-lucide="file-check" class="w-3.5 h-3.5 shrink-0 ${isUser ? 'text-white' : 'text-[#b25f40]'}"></i>
+                    <span class="truncate font-medium font-mono">${escapeHtml(f.name)}</span>
+                  </div>
+                  <span class="text-[9px] opacity-80 shrink-0 font-mono">${f.size || ''}</span>
+                </div>
+                <div class="flex flex-wrap items-center gap-1.5 text-[9.5px] font-mono">
+                  <span class="px-1.5 py-0.5 rounded ${isUser ? 'bg-white/20 text-white' : 'bg-[#b25f40]/15 text-[#b25f40]'} font-bold">ID: ${escapeHtml(fileId)}</span>
+                  <span class="px-1.5 py-0.5 rounded ${isUser ? 'bg-white/20 text-white' : 'bg-[#e8decb] dark:bg-[#3d342d] text-[#3b322a] dark:text-[#fbf4e9]'}">${escapeHtml(fileType)}</span>
+                  ${hasWebContentView ? `
+                    <a href="${previewUrl}" target="_blank" download="${escapeHtml(f.name)}" class="inline-flex items-center gap-0.5 text-[9px] underline opacity-90 hover:opacity-100">
+                      <span>عرض المحتوى (webcontentview)</span>
+                      <i data-lucide="arrow-up-left" class="w-2.5 h-2.5"></i>
+                    </a>
+                  ` : ''}
+                </div>
+              `;
+              filesDiv.appendChild(pill);
+            }
+          });
+          contentBox.appendChild(filesDiv);
+        }
+
+        // Message Body
+        const bodyDiv = document.createElement("div");
+        bodyDiv.setAttribute("dir", dir);
+        if (isUser) {
+          bodyDiv.className = `whitespace-pre-wrap font-sans ${isLtr ? 'text-left' : 'text-right'}`;
+          bodyDiv.textContent = msg.content;
+        } else {
+          bodyDiv.className = `markdown-body ${isLtr ? 'dir-ltr text-left' : 'dir-rtl text-right'}`;
+          // Render markdown
+          bodyDiv.innerHTML = renderMarkdown(msg.content);
+        }
+        contentBox.appendChild(bodyDiv);
+
+        // Footer with timestamp & copy button
+        const footerDiv = document.createElement("div");
+        footerDiv.setAttribute("dir", dir);
+        footerDiv.className = `flex items-center justify-between text-[10px] mt-2 pt-1.5 border-t ${
+          isUser 
+            ? 'border-white/25 text-white/80' 
+            : 'border-[#e8decb] dark:border-[#3d342d] text-[#7a7e72] dark:text-[#a29d8f]'
+        }`;
+
+        const leftGroup = document.createElement("div");
+        leftGroup.className = "flex items-center gap-2";
+
+        const timeSpan = document.createElement("span");
+        timeSpan.textContent = formatTime(msg.timestamp);
+        leftGroup.appendChild(timeSpan);
+
+        if (!isUser) {
+          const dirBadge = document.createElement("span");
+          dirBadge.className = `px-1.5 py-0.2 rounded text-[9px] font-mono uppercase font-semibold ${
+            isLtr 
+              ? 'bg-[#738382]/15 text-[#738382] dark:text-[#a8b5b4] border border-[#738382]/30' 
+              : 'bg-[#b25f40]/15 text-[#b25f40] border border-[#b25f40]/30'
+          }`;
+          dirBadge.textContent = isLtr ? "LTR" : "RTL";
+          dirBadge.title = isLtr ? "Text displayed LTR (English / French)" : "النص معروض بنظام RTL (العربية)";
+          leftGroup.appendChild(dirBadge);
+        }
+        footerDiv.appendChild(leftGroup);
+
+        if (!isUser) {
+          const copyBtn = document.createElement("button");
+          copyBtn.className = "flex items-center gap-1 text-[#7a7e72] hover:text-[#b25f40] dark:text-[#a29d8f] dark:hover:text-[#fbf4e9] transition";
+          copyBtn.innerHTML = `<i data-lucide="copy" class="w-3 h-3"></i><span>${isLtr ? 'Copy' : 'نسخ النص'}</span>`;
+          copyBtn.addEventListener("click", () => {
+            navigator.clipboard.writeText(msg.content);
+            showToast(isLtr ? "Copied to clipboard" : "تم نسخ الملاحظات إلى الحافظة");
+          });
+          footerDiv.appendChild(copyBtn);
+        }
+
+        contentBox.appendChild(footerDiv);
+
+        wrapper.appendChild(avatar);
+        wrapper.appendChild(contentBox);
+        messagesList.appendChild(wrapper);
+
+        refreshLucideIcons();
+      }
+
+      function renderMarkdown(text) {
+        if (window.marked) {
+          return window.marked.parse(text);
+        }
+        return escapeHtml(text).replace(/\n/g, "<br/>");
+      }
+
+      function scrollToBottom() {
+        setTimeout(() => {
+          messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }, 50);
+      }
+
+      // Drag and Drop Zone & Netlify-style Staging
+      function setupDragAndDrop() {
+        // Fullscreen drag detection
+        let dragCounter = 0;
+
+        window.addEventListener("dragenter", (e) => {
+          e.preventDefault();
+          dragCounter++;
+          fullscreenDropOverlay.classList.remove("hidden");
+          fullscreenDropOverlay.classList.add("flex");
+        });
+
+        window.addEventListener("dragleave", (e) => {
+          e.preventDefault();
+          dragCounter--;
+          if (dragCounter <= 0) {
+            dragCounter = 0;
+            fullscreenDropOverlay.classList.add("hidden");
+            fullscreenDropOverlay.classList.remove("flex");
+          }
+        });
+
+        window.addEventListener("dragover", (e) => {
+          e.preventDefault();
+        });
+
+        window.addEventListener("drop", (e) => {
+          e.preventDefault();
+          dragCounter = 0;
+          fullscreenDropOverlay.classList.add("hidden");
+          fullscreenDropOverlay.classList.remove("flex");
+
+          if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            handleFiles(e.dataTransfer.files, true);
+          }
+        });
+
+        // Dedicated dropzone click & drop
+        dropZone.addEventListener("click", () => {
+          fileInput.click();
+        });
+
+        dropZone.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          dropZone.classList.add("drag-active");
+        });
+
+        dropZone.addEventListener("dragleave", () => {
+          dropZone.classList.remove("drag-active");
+        });
+
+        dropZone.addEventListener("drop", (e) => {
+          e.preventDefault();
+          dropZone.classList.remove("drag-active");
+          if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            handleFiles(e.dataTransfer.files, true);
+          }
+        });
+
+        fileInput.addEventListener("change", (e) => {
+          if (e.target.files && e.target.files.length > 0) {
+            handleFiles(e.target.files, false);
+            fileInput.value = "";
+          }
+        });
+
+        attachFileBtn.addEventListener("click", () => {
+          fileInput.click();
+        });
+      }
+
+      // Enhanced MIME Type Detection
+      function detectMimeType(fileName) {
+        if (!fileName) return "application/octet-stream";
+        const ext = (fileName.split(".").pop() || "").toLowerCase();
+        const mimeMap = {
+          png: "image/png",
+          jpg: "image/jpeg",
+          jpeg: "image/jpeg",
+          gif: "image/gif",
+          webp: "image/webp",
+          svg: "image/svg+xml",
+          bmp: "image/bmp",
+          ico: "image/x-icon",
+          tiff: "image/tiff",
+          pdf: "application/pdf",
+          txt: "text/plain",
+          csv: "text/csv",
+          tsv: "text/tab-separated-values",
+          json: "application/json",
+          md: "text/markdown",
+          markdown: "text/markdown",
+          html: "text/html",
+          htm: "text/html",
+          xml: "application/xml",
+          doc: "application/msword",
+          docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          xls: "application/vnd.ms-excel",
+          xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          ppt: "application/vnd.ms-powerpoint",
+          pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+          zip: "application/zip",
+          rar: "application/x-rar-compressed",
+          tar: "application/x-tar",
+          gz: "application/gzip",
+          mp3: "audio/mpeg",
+          wav: "audio/wav",
+          ogg: "audio/ogg",
+          mp4: "video/mp4",
+          webm: "video/webm"
+        };
+        return mimeMap[ext] || "application/octet-stream";
+      }
+
+      // Process dropped or selected file: extract binary data, webcontentview, entire file type & ID
+      async function processSingleFile(file) {
+        const id = "file_" + Date.now() + "_" + Math.random().toString(36).substring(2, 9);
+        const entireFileType = file.type || detectMimeType(file.name);
+        const isImage = entireFileType.startsWith("image/") || /\.(png|jpg|jpeg|gif|webp|svg|bmp)$/i.test(file.name);
+
+        // Retrieve binary data as Data URL (webcontentview) for direct viewing, downloading, and transmission
+        const dataUrl = await new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result || "");
+          reader.onerror = () => resolve("");
+          reader.readAsDataURL(file);
+        });
+
+        // Pure base64 representation of binary content
+        const base64Data = typeof dataUrl === "string" && dataUrl.includes(",")
+          ? dataUrl.split(",")[1]
+          : "";
+
+        return {
+          id: id,
+          id_file: id,
+          ID_file: id,
+          fileId: id,
+          name: file.name,
+          fileName: file.name,
+          entireFileType: entireFileType,
+          fileType: entireFileType,
+          mimeType: entireFileType,
+          size: formatFileSize(file.size),
+          rawSize: file.size,
+          fileSize: file.size,
+          webcontentview: dataUrl,
+          webContentView: dataUrl,
+          downloadUrl: dataUrl,
+          binaryData: base64Data,
+          base64: base64Data,
+          isImage: isImage,
+          file: file,
+          progress: 100,
+          status: "ready"
+        };
+      }
+
+      async function handleFiles(files, autoSend = false) {
+        if (!files || files.length === 0) return;
+
+        const count = files.length;
+        showToast(`جاري استخراج البيانات الثنائية وتحديد الهوية (${count} ملفات)...`);
+
+        for (const file of Array.from(files)) {
+          const processed = await processSingleFile(file);
+          stagedFiles.push(processed);
+        }
+
+        renderFilePreviews();
+        updateSendButtonState();
+
+        if (autoSend) {
+          showToast(`تم استخراج البيانات الثنائية لـ ${count} ملفات، جاري الإرسال الفوري لـ n8n...`);
+          // Automatically trigger workflow
+          await handleSendMessage();
+        } else {
+          showToast(`تم استخراج البيانات الثنائية وتحديد ID لـ ${count} ملفات بنجاح`);
+        }
+      }
+
+      function renderFilePreviews() {
+        if (stagedFiles.length === 0) {
+          filePreviewList.classList.add("hidden");
+          filePreviewList.innerHTML = "";
+          attachedCountLabel.classList.add("hidden");
+          return;
+        }
+
+        filePreviewList.classList.remove("hidden");
+        attachedCountLabel.classList.remove("hidden");
+        attachedCountLabel.textContent = `${stagedFiles.length} ملفات مرفقة`;
+        filePreviewList.innerHTML = "";
+
+        stagedFiles.forEach((item, index) => {
+          const div = document.createElement("div");
+          div.className = "flex items-center justify-between p-2.5 rounded-xl border border-[#e8decb] dark:border-[#3d342d] bg-white dark:bg-[#241e1a] text-xs shadow-2xs gap-3";
+
+          let icon = "file-text";
+          if (item.name.endsWith(".pdf")) icon = "file-badge";
+          else if (item.isImage) icon = "file-image";
+          else if (item.name.match(/\.(csv|xlsx|json)$/i)) icon = "sheet";
+
+          const previewThumb = (item.isImage && item.webcontentview) 
+            ? `<img src="${item.webcontentview}" alt="${escapeHtml(item.name)}" class="w-9 h-9 object-cover rounded-lg border border-black/10 shrink-0" />`
+            : `<div class="w-9 h-9 rounded-lg bg-[#b25f40]/15 text-[#b25f40] flex items-center justify-center shrink-0">
+                 <i data-lucide="${icon}" class="w-4 h-4"></i>
+               </div>`;
+
+          div.innerHTML = `
+            <div class="flex items-center gap-2.5 truncate flex-1 min-w-0">
+              ${previewThumb}
+              <div class="truncate flex-1 min-w-0">
+                <div class="flex items-center gap-2">
+                  <span class="font-medium text-[#3b322a] dark:text-[#fbf4e9] truncate font-mono">${escapeHtml(item.name)}</span>
+                  <span class="px-1.5 py-0.5 rounded bg-[#b25f40]/15 text-[#b25f40] text-[9px] font-mono font-bold shrink-0">ID: ${escapeHtml(item.ID_file)}</span>
+                </div>
+                <div class="flex items-center gap-2 text-[10px] text-[#7a7e72] dark:text-[#a29d8f] font-mono mt-0.5">
+                  <span>${item.size}</span>
+                  <span>•</span>
+                  <span class="truncate text-[#7a7e72] dark:text-[#a29d8f]">${escapeHtml(item.entireFileType)}</span>
+                  <span>•</span>
+                  <span class="text-[#3f4734] dark:text-[#e5e891] font-sans">بيانات ثنائية جاهزة (data)</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-1 shrink-0">
+              ${item.webcontentview ? `
+                <a href="${item.webcontentview}" target="_blank" download="${escapeHtml(item.name)}" class="p-1.5 text-[#7a7e72] hover:text-[#b25f40] rounded-lg hover:bg-[#f6eee2] dark:hover:bg-[#2d2621] transition" title="webcontentview (تنزيل/معاينة)">
+                  <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                </a>
+              ` : ''}
+              <button class="remove-file-btn p-1.5 text-[#7a7e72] hover:text-rose-500 rounded-lg hover:bg-[#f6eee2] dark:hover:bg-[#2d2621] transition" data-index="${index}" title="إزالة">
+                <i data-lucide="x" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          `;
+
+          div.querySelector(".remove-file-btn").addEventListener("click", () => {
+            stagedFiles.splice(index, 1);
+            renderFilePreviews();
+            updateSendButtonState();
+          });
+
+          filePreviewList.appendChild(div);
+        });
+
+        refreshLucideIcons();
+      }
+
+      function updateSendButtonState() {
+        const hasText = chatInput.value.trim().length > 0;
+        const hasFiles = stagedFiles.length > 0;
+        sendBtn.disabled = !hasText && !hasFiles;
+      }
+
+      // Send Message & Integration Workflow (n8n Webhook)
+      async function handleSendMessage() {
+        const text = chatInput.value.trim();
+        if (!text && stagedFiles.length === 0) return;
+
+        let chat = chats.find(c => c.id === currentChatId);
+        if (!chat) {
+          createNewChat(false);
+          chat = chats.find(c => c.id === currentChatId);
+        }
+
+        // Auto-title on first message
+        if (chat.messages.length === 0) {
+          const titleText = text || (stagedFiles.length > 0 ? stagedFiles[0].name : "جلسة تحليل");
+          chat.title = titleText.length > 30 ? titleText.substring(0, 30) + "..." : titleText;
+          saveChats();
+        }
+
+        // Default content description for user message if only files were sent
+        const defaultPrompt = stagedFiles.length > 0 
+          ? `📂 إرسال وتحليل مستند: ${stagedFiles.map(f => f.name).join(", ")}`
+          : text;
+
+        // Prepare User Message object with complete file metadata, IDs and webcontentview
+        const userMsg = {
+          role: "user",
+          content: text || defaultPrompt,
+          timestamp: new Date().toISOString(),
+          files: stagedFiles.map(f => ({
+            id: f.id,
+            id_file: f.id_file,
+            ID_file: f.ID_file,
+            fileId: f.fileId,
+            name: f.name,
+            fileName: f.fileName,
+            size: f.size,
+            rawSize: f.rawSize,
+            fileSize: f.fileSize,
+            entireFileType: f.entireFileType,
+            fileType: f.fileType,
+            mimeType: f.mimeType,
+            webcontentview: f.webcontentview,
+            webContentView: f.webContentView,
+            downloadUrl: f.downloadUrl,
+            isImage: f.isImage
+          }))
+        };
+
+        chat.messages.push(userMsg);
+        saveChats();
+        renderActiveChat();
+
+        // Clear input & reset textarea
+        const filesToSend = [...stagedFiles];
+        stagedFiles = [];
+        renderFilePreviews();
+        chatInput.value = "";
+        chatInput.style.height = "auto";
+        updateSendButtonState();
+
+        // Show Loading State
+        loadingIndicator.classList.remove("hidden");
+        scrollToBottom();
+
+        try {
+          let responseData;
+
+          // Check if webhook is placeholder
+          if (!activeWebhookUrl || activeWebhookUrl === "PLACEHOLDER_URL") {
+            responseData = await simulateNotebookLMResponse(text, filesToSend);
+          } else {
+            let payload;
+            let headers = {};
+
+            if (filesToSend.length > 0) {
+              const formData = new FormData();
+              const primary = filesToSend[0];
+              const messageText = text || `تحليل المستند: ${filesToSend.map(f => f.name).join(", ")}`;
+
+              // Text & chat metadata
+              formData.append("message", messageText);
+              formData.append("text", messageText);
+              formData.append("query", messageText);
+              formData.append("chatId", currentChatId);
+              formData.append("timestamp", new Date().toISOString());
+
+              // Single/Primary file metadata captured explicitly for n8n
+              formData.append("ID_file", primary.ID_file);
+              formData.append("id_file", primary.id_file);
+              formData.append("fileId", primary.fileId);
+              formData.append("id", primary.id);
+              formData.append("fileName", primary.name);
+              formData.append("name", primary.name);
+              formData.append("entireFileType", primary.entireFileType);
+              formData.append("fileType", primary.fileType);
+              formData.append("mimeType", primary.mimeType);
+              formData.append("fileSize", String(primary.rawSize));
+              formData.append("size", primary.size);
+              formData.append("filesCount", String(filesToSend.length));
+
+              // Capture binary data & webcontentview
+              formData.append("webcontentview", primary.webcontentview);
+              formData.append("webContentView", primary.webContentView);
+              formData.append("downloadUrl", primary.webcontentview);
+              formData.append("binaryData", primary.binaryData);
+              formData.append("base64", primary.binaryData);
+              formData.append("dataBase64", primary.binaryData);
+
+              // Exactly ONE binary attachment named "data" sent to n8n Webhook
+              formData.append("data", primary.file, primary.name);
+
+              // Structured JSON array for all files
+              const filesSummary = filesToSend.map(f => ({
+                ID_file: f.ID_file,
+                id_file: f.id_file,
+                fileId: f.fileId,
+                name: f.name,
+                fileName: f.fileName,
+                entireFileType: f.entireFileType,
+                fileType: f.fileType,
+                mimeType: f.mimeType,
+                fileSize: f.rawSize,
+                size: f.size,
+                webcontentview: f.webcontentview,
+                webContentView: f.webContentView,
+                downloadUrl: f.downloadUrl,
+                binaryData: f.binaryData,
+                base64: f.binaryData
+              }));
+
+              formData.append("files", JSON.stringify(filesSummary));
+              formData.append("attachments", JSON.stringify(filesSummary));
+              formData.append("fileMetadata", JSON.stringify(filesSummary[0]));
+
+              // Read text content for text/code/markdown/json files to simplify n8n body consumption
+              for (const item of filesToSend) {
+                try {
+                  if (item.file.size < 4000000 && (
+                    item.name.match(/\.(txt|md|csv|json|js|ts|html|css|xml|yaml|yml|log)$/i) || 
+                    (item.file.type && item.file.type.startsWith("text/"))
+                  )) {
+                    const textContent = await item.file.text();
+                    formData.append("fileContent", textContent);
+                    formData.append("fileText", textContent);
+                    break;
+                  }
+                } catch (e) {
+                  console.warn("Could not read file text:", e);
+                }
+              }
+
+              payload = formData;
+            } else {
+              payload = JSON.stringify({
+                message: text,
+                text: text,
+                query: text,
+                chatId: currentChatId,
+                timestamp: new Date().toISOString()
+              });
+              headers["Content-Type"] = "application/json";
+            }
+
+            // Attempt direct fetch first, with seamless proxy fallback if CORS blocks browser in dev
+            let res;
+            try {
+              res = await fetch(activeWebhookUrl, {
+                method: "POST",
+                headers: headers,
+                body: payload
+              });
+            } catch (fetchErr) {
+              // Try through proxy if direct call encounters CORS
+              if (activeWebhookUrl.includes("drissco.app.n8n.cloud")) {
+                const proxyUrl = activeWebhookUrl.replace("https://drissco.app.n8n.cloud", "/api/n8n-proxy");
+                try {
+                  res = await fetch(proxyUrl, {
+                    method: "POST",
+                    headers: headers,
+                    body: payload
+                  });
+                } catch (proxyErr) {
+                  throw fetchErr;
+                }
+              } else {
+                throw fetchErr;
+              }
+            }
+
+            if (!res.ok) {
+              const status = res.status;
+              let errText = "";
+              try {
+                errText = await res.text();
+              } catch (e) {}
+
+              if (status === 404 || errText.includes("test event") || errText.includes("not registered")) {
+                throw new Error(`عقدة Webhook التجريبية في n8n تنتظر الضغط على **"Listen for test event"** داخل واجهة n8n، أو تفعيل سير العمل (Active) على وضع الإنتاج.`);
+              }
+              throw new Error(`استجابة غير ناجحة من سيرفر n8n (رمز الحالة: ${status})${errText ? `: ${errText}` : ""}`);
+            }
+
+            const contentType = res.headers.get("content-type");
+            if (contentType && contentType.includes("application/json")) {
+              const json = await res.json();
+              if (Array.isArray(json)) {
+                const first = json[0] || {};
+                responseData = first.output || first.response || first.text || first.message || first.notes || JSON.stringify(json, null, 2);
+              } else if (typeof json === "object" && json !== null) {
+                if (json.message === "Workflow was started") {
+                  responseData = "✅ **تم استلام البيانات بنجاح في سير عمل n8n**\n\n(Workflow was started) - تم تشغيل مسار العمل في n8n بنجاح.";
+                } else {
+                  responseData = json.output || json.response || json.text || json.message || json.notes || json.data || json.result || JSON.stringify(json, null, 2);
+                }
+              } else {
+                responseData = String(json);
+              }
+            } else {
+              responseData = await res.text();
+              if (responseData === "Workflow was started" || responseData === '{"message":"Workflow was started"}') {
+                responseData = "✅ **تم استلام البيانات بنجاح في سير عمل n8n**\n\n(Workflow was started) - تم تشغيل مسار العمل في n8n بنجاح.";
+              }
+            }
+          }
+
+          // Append Assistant Response
+          const assistantMsg = {
+            role: "assistant",
+            content: responseData || "تمت المعالجة واستلام البيانات بنجاح في n8n.",
+            timestamp: new Date().toISOString()
+          };
+          chat.messages.push(assistantMsg);
+          saveChats();
+          renderActiveChat();
+
+        } catch (err) {
+          console.error("n8n Webhook Error:", err);
+          const errorMsg = {
+            role: "assistant",
+            content: `### ⚠️ تعذر الاتصال بـ n8n Webhook
+حدث خطأ أثناء إرسال البيانات إلى الرابط:
+\`${activeWebhookUrl}\`
+
+**سبب المشكلة:**
+${err.message || "خطأ في الشبكة أو قيود CORS على الخادم"}
+
+**خطوات التحقق في n8n:**
+1. إذا كنت تستخدم رابط الاختبار (\`/webhook-test/notesapp\`)، افتح سير العمل في **n8n** واضغط على زر **"Listen for test event"** داخل عقدة Webhook قبل إرسال الرسالة أو إسقاط الملف.
+2. إذا أردت الاستقبال المستمر بدون الحاجة للضغط على زر الاختبار، قم بتفعيل سير العمل إلى **Active** في n8n واستبدل الرابط في الإعدادات برابط الإنتاج (\`/webhook/notesapp\`).
+3. تأكد من أن طريقة الطلب (HTTP Method) في عقدة Webhook هي **POST**.`,
+            timestamp: new Date().toISOString()
+          };
+          chat.messages.push(errorMsg);
+          saveChats();
+          renderActiveChat();
+        } finally {
+          loadingIndicator.classList.add("hidden");
+          scrollToBottom();
+        }
+      }
+
+      // Intelligent NotebookLM-style response fallback when using placeholder
+      async function simulateNotebookLMResponse(query, files) {
+        // Realistic analysis delay
+        await new Promise(r => setTimeout(r, 1400));
+
+        let fileSummary = "";
+        if (files.length > 0) {
+          fileSummary = `\n\n#### 📂 المستندات والملاحظات المرفوعة:
+${files.map(f => `- **${f.name}** (${f.size}) - تم استخراج النصوص وتجهيز الفهرس الدلالي`).join("\n")}`;
+        }
+
+        return `### 📋 ملخص الملاحظات والتحليل المعرفي (NotebookLM Analysis)
+
+تم استلام المدخلات بنجاح وجرى تحليل المحتوى وفق سياق الملاحظات الدراسية.
+
+#### 💡 المحاور الجوهرية:
+1. **تكامل البيانات الفوري:** تم إعداد معالج الـ Webhook لإرسال البيانات بصيغة \`FormData\` و \`JSON\` مباشرة إلى n8n.
+2. **استخراج المعلومات بدون تشتيت:** التركيز الكامل على تلخيص النصوص، النقاط التنفيذية، والجداول المنظمة للإنتاجية.
+3. **التوثيق والحفظ:** تصنيف المخرجات لتسهيل حفظها ومزامنتها مع قاعدة بيانات Airtable المخصصة.${fileSummary}
+
+> **ملاحظة إرشادية:** التطبيق مهيأ حاليًا برابط \`const N8N_WEBHOOK_URL = "PLACEHOLDER_URL"\`. يمكنك النقر على زر **الإعدادات** في أسفل الشريط الجانبي لوضع رابط الـ Webhook الفعلي من سيرفرك، وسيقوم النظام بتوجيه الطلبات إليه فورًا.`;
+      }
+
+      // Event Listeners Setup
+      function setupEventListeners() {
+        // Mobile Sidebar toggles
+        mobileMenuBtn.addEventListener("click", openMobileSidebar);
+        closeSidebarBtn.addEventListener("click", closeMobileSidebar);
+        mobileBackdrop.addEventListener("click", closeMobileSidebar);
+
+        // New Chat
+        newChatBtn.addEventListener("click", () => createNewChat(true));
+
+        // Search in chats
+        searchChatsInput.addEventListener("input", (e) => {
+          renderChatList(e.target.value);
+        });
+
+        // Theme Toggle
+        themeToggleBtn.addEventListener("click", toggleTheme);
+
+        // Settings Modal
+        openSettingsBtn.addEventListener("click", openSettings);
+        webhookStatusIndicator.addEventListener("click", openSettings);
+        closeSettingsModalBtn.addEventListener("click", closeSettings);
+        cancelSettingsBtn.addEventListener("click", closeSettings);
+        saveSettingsBtn.addEventListener("click", saveSettings);
+
+        // Rename Modal
+        cancelRenameBtn.addEventListener("click", closeRenameModal);
+        confirmRenameBtn.addEventListener("click", confirmRename);
+        renameChatInput.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") confirmRename();
+          if (e.key === "Escape") closeRenameModal();
+        });
+
+        // Clear current chat
+        clearChatBtn.addEventListener("click", () => {
+          const chat = chats.find(c => c.id === currentChatId);
+          if (chat && chat.messages.length > 0) {
+            if (confirm("هل تريد مسح جميع رسائل هذه المحادثة؟")) {
+              chat.messages = [];
+              saveChats();
+              renderActiveChat();
+              showToast("تم مسح رسائل المحادثة");
+            }
+          }
+        });
+
+        // Chat Textarea Auto-expand & Send
+        chatInput.addEventListener("input", () => {
+          chatInput.style.height = "auto";
+          chatInput.style.height = Math.min(chatInput.scrollHeight, 160) + "px";
+          updateSendButtonState();
+        });
+
+        chatInput.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            if (!sendBtn.disabled) {
+              handleSendMessage();
+            }
+          }
+        });
+
+        sendBtn.addEventListener("click", handleSendMessage);
+
+        // Suggestion Cards click
+        document.querySelectorAll(".suggestion-card").forEach(card => {
+          card.addEventListener("click", () => {
+            const heading = card.querySelector(".font-semibold span").textContent;
+            chatInput.value = `يرجى ${heading} واستخراج الأفكار الجوهرية والتوصيات بشكل منظم بصيغة Markdown.`;
+            chatInput.style.height = "auto";
+            chatInput.style.height = Math.min(chatInput.scrollHeight, 160) + "px";
+            updateSendButtonState();
+            chatInput.focus();
+          });
+        });
+      }
+
+      function openMobileSidebar() {
+        sidebar.classList.remove("translate-x-full");
+        mobileBackdrop.classList.remove("hidden");
+      }
+
+      function closeMobileSidebar() {
+        sidebar.classList.add("translate-x-full");
+        mobileBackdrop.classList.add("hidden");
+      }
+
+      function openSettings() {
+        webhookUrlInput.value = activeWebhookUrl || N8N_WEBHOOK_URL;
+        airtableUrlInput.value = activeAirtableUrl;
+        settingsModal.classList.remove("hidden");
+        settingsModal.classList.add("flex");
+      }
+
+      function closeSettings() {
+        settingsModal.classList.add("hidden");
+        settingsModal.classList.remove("flex");
+      }
+
+      function saveSettings() {
+        const newWebhook = webhookUrlInput.value.trim();
+        const newAirtable = airtableUrlInput.value.trim();
+
+        if (newWebhook) {
+          activeWebhookUrl = newWebhook;
+          localStorage.setItem("notebook_webhook_url", newWebhook);
+        } else {
+          activeWebhookUrl = N8N_WEBHOOK_URL;
+          localStorage.setItem("notebook_webhook_url", N8N_WEBHOOK_URL);
+        }
+
+        if (newAirtable) {
+          activeAirtableUrl = newAirtable;
+          localStorage.setItem("notebook_airtable_url", newAirtable);
+        } else {
+          activeAirtableUrl = "https://airtable.com";
+          localStorage.removeItem("notebook_airtable_url");
+        }
+
+        airtableBtn.href = activeAirtableUrl;
+
+        if (activeWebhookUrl && activeWebhookUrl !== "PLACEHOLDER_URL") {
+          webhookStatusText.textContent = "n8n متصل: notesapp";
+        } else {
+          webhookStatusText.textContent = "n8n Webhook";
+        }
+
+        closeSettings();
+        showToast("تم حفظ الإعدادات وتحديث رابط n8n Webhook");
+      }
+
+      // Utility Helpers
+      function escapeHtml(string) {
+        if (!string) return "";
+        return String(string)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      function formatTime(isoString) {
+        if (!isoString) return "";
+        try {
+          const date = new Date(isoString);
+          return date.toLocaleTimeString("ar-SA", { hour: "2-digit", minute: "2-digit" });
+        } catch (e) {
+          return "";
+        }
+      }
+
+      function formatFileSize(bytes) {
+        if (!bytes || bytes === 0) return "0 B";
+        const k = 1024;
+        const sizes = ["B", "KB", "MB", "GB"];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
+      }
+
+      // Run on DOM Ready
+      document.addEventListener("DOMContentLoaded", init);
+    </script>
+  </body>
+</html>

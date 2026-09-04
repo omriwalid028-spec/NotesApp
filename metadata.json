@@ -1,0 +1,6 @@
+{
+  "name": "NotesApp",
+  "description": "تطبيق ومساحة عمل NotesApp للملاحظات والتحليل الذكي مع n8n Webhook وسحب وإفلات الملفات ودعم الوضع الليلي والنهاري.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
