@@ -11,8 +11,8 @@
     <meta name="twitter:card" content="summary_large_image" />
 
     <!-- App Favicon & Icon matching #b25f40 palette -->
-    <link rel="icon" type="image/svg+xml" href="/public/icon.svg" />
-    <link rel="apple-touch-icon" href="/public/icon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/icon.svg" />
 
     <!-- Google Fonts: Editorial Serif & Display (Amiri, El Messiri, Playfair Display) + Bilingual Sans (Alexandria, Cairo, Plus Jakarta Sans) from Arabic Typography Reference -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -307,7 +307,7 @@
         <!-- Sidebar Header & Branding -->
         <div class="p-4 border-b border-[#e8decb] dark:border-[#3d342d] flex items-center justify-between">
           <div class="flex items-center gap-2.5">
-            <img src="/public/icon.svg" alt="NotesApp Icon" class="w-9 h-9 rounded-xl shadow-sm shadow-[#b25f40]/25 shrink-0 object-contain" />
+            <img src="/icon.svg" onerror="this.onerror=null;this.src='/public/icon.svg';" alt="NotesApp Icon" class="w-9 h-9 rounded-xl shadow-sm shadow-[#b25f40]/25 shrink-0 object-contain" />
             <div>
               <div class="flex items-center gap-1.5">
                 <span class="font-display-title font-bold text-base tracking-tight text-[#3b322a] dark:text-[#fbf4e9]">NotesApp</span>
@@ -423,7 +423,7 @@
           <!-- Empty State (Shown when active chat is empty) -->
           <div id="emptyState" class="h-full flex flex-col items-center justify-center text-center max-w-xl mx-auto py-12 px-4">
             <div class="w-20 h-20 rounded-3xl overflow-hidden shadow-lg shadow-[#b25f40]/25 mb-5 flex items-center justify-center border border-[#b25f40]/25 p-1 bg-white/70 dark:bg-[#241e1a]">
-              <img src="/public/icon.svg" alt="NotesApp Icon" class="w-full h-full rounded-2xl object-contain" />
+              <img src="/icon.svg" onerror="this.onerror=null;this.src='/public/icon.svg';" alt="NotesApp Icon" class="w-full h-full rounded-2xl object-contain" />
             </div>
             
             <h1 class="font-display-title text-2xl md:text-3xl font-bold text-[#3b322a] dark:text-[#fbf4e9] mb-2">مساحة الملاحظات والدراسة الذكية</h1>
@@ -467,7 +467,25 @@
           <!-- Processing / Loading Indicator -->
           <div id="loadingIndicator" class="max-w-3xl mx-auto hidden">
             <div class="flex items-start gap-3">
-              <img src="/public/icon.svg" alt="Bot Icon" class="w-8 h-8 rounded-xl shrink-0 shadow-xs object-contain" />
+              <div class="w-8 h-8 rounded-xl shrink-0 shadow-xs overflow-hidden flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none" class="w-full h-full">
+                  <defs>
+                    <linearGradient id="primaryBgLoad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#c47051" />
+                      <stop offset="100%" stop-color="#9d4b2e" />
+                    </linearGradient>
+                    <linearGradient id="flapGradLoad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#7a3620" />
+                      <stop offset="100%" stop-color="#5a2413" />
+                    </linearGradient>
+                  </defs>
+                  <rect width="512" height="512" rx="150" fill="url(#primaryBgLoad)" />
+                  <g>
+                    <path d="M 148 114 C 126 114, 114 126, 114 148 L 114 158 A 28 28 0 0 0 114 214 L 114 228 A 28 28 0 0 0 114 284 L 114 298 A 28 28 0 0 0 114 354 L 114 364 C 114 386, 126 398, 148 398 L 290 398 C 290 398, 290 350, 320 320 C 350 290, 398 290, 398 290 L 398 148 C 398 126, 386 114, 364 114 Z" fill="#FBF4E9" />
+                    <path d="M 290 398 C 290 398, 305 340, 345 310 C 385 285, 398 290, 398 290 C 398 290, 380 345, 345 375 C 315 400, 290 398, 290 398 Z" fill="url(#flapGradLoad)" opacity="0.95" />
+                  </g>
+                </svg>
+              </div>
               <div class="bg-white dark:bg-[#241e1a] border border-[#e8decb] dark:border-[#3d342d] rounded-2xl rounded-tr-none px-4 py-3 shadow-2xs">
                 <div class="flex items-center gap-2 text-sm text-[#3b322a] dark:text-[#fbf4e9]">
                   <div class="flex space-x-1 space-x-reverse">
@@ -644,6 +662,25 @@
        * N8N_WEBHOOK_URL: رابط الـ Webhook الإنتاجي المعتمد لـ n8n
        */
       const N8N_WEBHOOK_URL = "https://drissco.app.n8n.cloud/webhook/notesapp";
+
+      // App Icon SVG Vector (Renders natively in chat without network dependency or broken image risk)
+      const APP_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none" class="w-full h-full">
+        <defs>
+          <linearGradient id="primaryBgGradChat" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#c47051" />
+            <stop offset="100%" stop-color="#9d4b2e" />
+          </linearGradient>
+          <linearGradient id="flapGradChat" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#7a3620" />
+            <stop offset="100%" stop-color="#5a2413" />
+          </linearGradient>
+        </defs>
+        <rect width="512" height="512" rx="150" fill="url(#primaryBgGradChat)" />
+        <g>
+          <path d="M 148 114 C 126 114, 114 126, 114 148 L 114 158 A 28 28 0 0 0 114 214 L 114 228 A 28 28 0 0 0 114 284 L 114 298 A 28 28 0 0 0 114 354 L 114 364 C 114 386, 126 398, 148 398 L 290 398 C 290 398, 290 350, 320 320 C 350 290, 398 290, 398 290 L 398 148 C 398 126, 386 114, 364 114 Z" fill="#FBF4E9" />
+          <path d="M 290 398 C 290 398, 305 340, 345 310 C 385 285, 398 290, 398 290 C 398 290, 380 345, 345 375 C 315 400, 290 398, 290 398 Z" fill="url(#flapGradChat)" opacity="0.95" />
+        </g>
+      </svg>`;
 
       // Application State
       let chats = [];
@@ -1017,8 +1054,8 @@
           avatar.className = "w-8 h-8 rounded-xl flex items-center justify-center shrink-0 shadow-2xs bg-[#e8decb] dark:bg-[#3d342d] text-[#3b322a] dark:text-[#fbf4e9]";
           avatar.innerHTML = `<i data-lucide="user" class="w-4 h-4"></i>`;
         } else {
-          avatar.className = "w-8 h-8 rounded-xl overflow-hidden shrink-0 shadow-xs";
-          avatar.innerHTML = `<img src="/public/icon.svg" alt="NotebookLM Icon" class="w-full h-full object-contain" />`;
+          avatar.className = "w-8 h-8 rounded-xl overflow-hidden shrink-0 shadow-xs flex items-center justify-center";
+          avatar.innerHTML = APP_ICON_SVG;
         }
 
         // Content Box
