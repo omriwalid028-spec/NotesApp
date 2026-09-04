@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/n8n-proxy/:path*",
+      "destination": "https://drissco.app.n8n.cloud/:path*"
+    }
+  ]
+}

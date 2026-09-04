@@ -581,7 +581,7 @@
             <input 
               id="webhookUrlInput" 
               type="url" 
-              placeholder="https://drissco.app.n8n.cloud/webhook-test/notesapp" 
+              placeholder="https://drissco.app.n8n.cloud/webhook/notesapp" 
               class="w-full text-xs p-2.5 rounded-xl border border-[#e8decb] dark:border-[#3d342d] bg-[#fbf4e9] dark:bg-[#1f1a16] text-[#3b322a] dark:text-[#fbf4e9] focus:outline-none focus:border-[#b25f40] font-mono"
             />
             <p class="text-[11px] text-[#7a7e72] dark:text-[#a29d8f] mt-1">يُرسل طلب POST مع الحقول والنصوص والمستندات المرفقة.</p>
@@ -641,9 +641,9 @@
     <script>
       /**
        * 3. الربط البرمجي والمعالجة (n8n Webhook Integration)
-       * N8N_WEBHOOK_URL: رابط الـ Webhook الخاص بـ n8n المعتمد للربط
+       * N8N_WEBHOOK_URL: رابط الـ Webhook الإنتاجي المعتمد لـ n8n
        */
-      const N8N_WEBHOOK_URL = "https://drissco.app.n8n.cloud/webhook-test/notesapp";
+      const N8N_WEBHOOK_URL = "https://drissco.app.n8n.cloud/webhook/notesapp";
 
       // Application State
       let chats = [];
@@ -749,7 +749,8 @@
       // Load Settings from LocalStorage
       function loadSettings() {
         const savedWebhook = localStorage.getItem("notebook_webhook_url");
-        if (savedWebhook && savedWebhook.trim() !== "" && savedWebhook !== "PLACEHOLDER_URL") {
+        // Automatically migrate from old test URL or placeholder to production URL
+        if (savedWebhook && savedWebhook.trim() !== "" && savedWebhook !== "PLACEHOLDER_URL" && !savedWebhook.includes("/webhook-test/notesapp")) {
           activeWebhookUrl = savedWebhook.trim();
         } else {
           activeWebhookUrl = N8N_WEBHOOK_URL;
@@ -1673,8 +1674,8 @@
 ${err.message || "خطأ في الشبكة أو قيود CORS على الخادم"}
 
 **خطوات التحقق في n8n:**
-1. إذا كنت تستخدم رابط الاختبار (\`/webhook-test/notesapp\`)، افتح سير العمل في **n8n** واضغط على زر **"Listen for test event"** داخل عقدة Webhook قبل إرسال الرسالة أو إسقاط الملف.
-2. إذا أردت الاستقبال المستمر بدون الحاجة للضغط على زر الاختبار، قم بتفعيل سير العمل إلى **Active** في n8n واستبدل الرابط في الإعدادات برابط الإنتاج (\`/webhook/notesapp\`).
+1. تأكد من أن سير العمل في **n8n** مفعل ومنشور بحالة **Active**، ليعمل رابط الإنتاج (\`/webhook/notesapp\`) بشكل فوري وتلقائي ومستمر.
+2. إذا كان سير العمل غير منشور (غير مفعل) وترغب باختباره تجريبيًا، يمكنك تعديل الرابط في الإعدادات إلى رابط الاختبار (\`/webhook-test/notesapp\`) والضغط على "Listen for test event".
 3. تأكد من أن طريقة الطلب (HTTP Method) في عقدة Webhook هي **POST**.`,
             timestamp: new Date().toISOString()
           };
